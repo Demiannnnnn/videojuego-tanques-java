@@ -204,6 +204,7 @@ public class Jugar  {
                 muerte.setLayoutY(0);
                 listJugador.eliminarJugador(jugadorImpactado);
             }
+            // 0 vivos = fin de ronda sin ganador (decisión mínima, revisar con el dueño)
             if (listJugador.quedaUnoVivo()) {//Si queda un jugador, termina y reinicia
                 finalizarRonda();
             }
@@ -358,6 +359,7 @@ public class Jugar  {
                             if (listJugador.getJugadorActual().tipo.equals("bot")) { // preguntamos si es un bot
                                 iniciar_bot();
                             }
+                            // 0 vivos = fin de ronda sin ganador (decisión mínima, revisar con el dueño)
                             if(listJugador.quedaUnoVivo()) // si queda uno vivo terminamos la ronda
                             {
                                 finalizarRonda();
@@ -392,6 +394,7 @@ public class Jugar  {
                                         iniciar_bot();
                                     }
 
+                                    // 0 vivos = fin de ronda sin ganador (decisión mínima, revisar con el dueño)
                                     if(listJugador.quedaUnoVivo()) // si queda uno vivo terminamos la ronda
                                     {
                                         finalizarRonda();
@@ -532,11 +535,25 @@ public class Jugar  {
         return (int) (altura * Math.abs(Globales.gravedad)/ 100);
     }
        
+    // 0 vivos = fin de ronda sin ganador (decisión mínima, revisar con el dueño)
+    public static Jugador cerrarRondaLogica(ListaJugadores listJugador) {
+        if (listJugador == null) {
+            return null;
+        }
+        // Determinar ganador antes de revivir a los jugadores.
+        // 0 vivos = fin de ronda sin ganador (decisión mínima, revisar con el dueño).
+        Jugador ganador = listJugador.getGanadorRonda();
+        // Con 0 vivos no debe asignarse victoria a nadie ni lanzar excepción.
+        Jugador.pagar_ronda(listJugador);
+        listJugador.revivir();
+        return ganador;
+    }
+
     public void finalizarRonda(){//se finaliza una ronda una vez que se cumplan las condiciones       
-        listJugador.revivir(); //marcamos todos los jugadores como vivos
+        // 0 vivos = fin de ronda sin ganador (decisión mínima, revisar con el dueño)
+        cerrarRondaLogica(listJugador);
         terrain.borrarHitboxAnterior();//eliminamos las hitbox anteriores
         jugando=false;//ya no se esta jugando
-        Jugador.pagar_ronda(listJugador);//se entrega el dinero correspondiente a cada jugador  
         resultados.mostrarTabla(escenaTienda,listJugador);//muestra la clasificacion
              
     } 
