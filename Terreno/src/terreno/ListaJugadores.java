@@ -167,21 +167,41 @@
             lista.get(indiceJugador).descativar();
 
         }
-        public boolean quedaUnoVivo(){//si queda un jugador vivo para finalizar la ronda
-            int cantidadMuetos=0;
-            for(Jugador aux: lista)
-            {
-                if(aux.estaEliminado())
-                {
-                    cantidadMuetos++;
+        public int getCantidadVivos() {
+            int vivos = 0;
+            for (Jugador aux : lista) {
+                if (!aux.estaEliminado()) {
+                    vivos++;
                 }
             }
-            int cantidadMaximaDeMuertos=lista.size()-1;
-            if(cantidadMuetos==cantidadMaximaDeMuertos)
-            {
-                return true;
+            return vivos;
+        }
+
+        // 0 vivos = fin de ronda sin ganador (decisión mínima, revisar con el dueño)
+        public Jugador getGanadorRonda() {
+            Jugador ganador = null;
+            for (Jugador aux : lista) {
+                if (!aux.estaEliminado()) {
+                    if (ganador != null) {
+                        return null; // Hay más de 1 vivo: la ronda aún no termina con ganador
+                    }
+                    ganador = aux;
+                }
             }
-            return false;
+            return ganador; // Retorna el único vivo si queda 1, o null si quedan 0 vivos (sin ganador)
+        }
+
+        // 0 vivos = fin de ronda sin ganador (decisión mínima, revisar con el dueño)
+        public boolean rondaTerminada() {
+            if (lista.isEmpty()) {
+                return false;
+            }
+            return getCantidadVivos() <= 1;
+        }
+
+        public boolean quedaUnoVivo() {
+            // 0 vivos = fin de ronda sin ganador (decisión mínima, revisar con el dueño)
+            return rondaTerminada();
         }
         
         public boolean quedanActivos()//si no queda ningun jugador activo(se quedaron todos sin balas) para finalizar la ronda

@@ -1,2 +1,7 @@
 /Terreno/dist/
 /Terreno/target/
+/Terreno/build/
+/Terreno/out/
+hs_err_pid*.log
+/Terreno/nbproject/private/
+.DS_Store

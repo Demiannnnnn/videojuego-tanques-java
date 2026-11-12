@@ -107,6 +107,77 @@ class ListaJugadoresTest {
     }
 
     @Test
+    void dosVivosNoTerminaRonda() {
+        lista.instanciarJugadores(3, 0);
+        lista.eliminarJugador(0); // Quedan 2 vivos
+        assertFalse(lista.quedaUnoVivo());
+        assertFalse(lista.rondaTerminada());
+        assertNull(lista.getGanadorRonda());
+    }
+
+    @Test
+    void unVivoTerminaRondaConGanador() {
+        lista.instanciarJugadores(3, 0);
+        lista.eliminarJugador(0);
+        lista.eliminarJugador(1); // Queda exactamente 1 vivo (índice 2: VIDAL)
+        assertTrue(lista.quedaUnoVivo());
+        assertTrue(lista.rondaTerminada());
+        Jugador ganador = lista.getGanadorRonda();
+        assertNotNull(ganador);
+        assertEquals(2, ganador.jugador);
+        assertEquals("VIDAL", ganador.nombre);
+    }
+
+    @Test
+    void ceroVivosTerminaRondaSinGanador() {
+        lista.instanciarJugadores(3, 0);
+        lista.eliminarJugador(0);
+        lista.eliminarJugador(1);
+        lista.eliminarJugador(2); // 0 vivos (muertos todos en la misma explosión)
+        assertTrue(lista.quedaUnoVivo(), "Con 0 vivos la ronda debe terminar");
+        assertTrue(lista.rondaTerminada(), "Con 0 vivos rondaTerminada debe ser true");
+        assertNull(lista.getGanadorRonda(), "Con 0 vivos no debe haber ganador");
+    }
+
+    @Test
+    void cierreDeRondaConCeroVivosNoLanzaExcepcion() {
+        lista.instanciarJugadores(3, 0);
+        lista.eliminarJugador(0);
+        lista.eliminarJugador(1);
+        lista.eliminarJugador(2); // 0 vivos
+        assertDoesNotThrow(() -> {
+            Jugador ganador = Jugar.cerrarRondaLogica(lista);
+            assertNull(ganador, "Con 0 vivos no debe asignarse ganador");
+        });
+        // Comprobar que los jugadores se reviven para la siguiente ronda
+        for (Jugador j : lista.getLista()) {
+            assertFalse(j.estaEliminado());
+            assertEquals(100, j.getVida());
+        }
+    }
+
+    @Test
+    void cierreDeRondaConUnVivoRetornaGanador() {
+        lista.instanciarJugadores(3, 0);
+        lista.eliminarJugador(0);
+        lista.eliminarJugador(1); // Queda 1 vivo (índice 2)
+        assertDoesNotThrow(() -> {
+            Jugador ganador = Jugar.cerrarRondaLogica(lista);
+            assertNotNull(ganador);
+            assertEquals(2, ganador.jugador);
+        });
+    }
+
+    @Test
+    void cierreDeRondaSeguroConListaVaciaONula() {
+        assertDoesNotThrow(() -> {
+            assertNull(Jugar.cerrarRondaLogica(null));
+            lista.lista.clear();
+            assertNull(Jugar.cerrarRondaLogica(lista));
+        });
+    }
+
+    @Test
     void quedanActivosCuandoTodosSinBalas() {
         lista.instanciarJugadores(2, 0);
         assertFalse(lista.quedanActivos());
