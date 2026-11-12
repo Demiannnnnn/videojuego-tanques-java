@@ -541,7 +541,6 @@ public class Jugar  {
             return null;
         }
         // Determinar ganador antes de revivir a los jugadores.
-        // 0 vivos = fin de ronda sin ganador (decisión mínima, revisar con el dueño).
         Jugador ganador = listJugador.getGanadorRonda();
         // Con 0 vivos no debe asignarse victoria a nadie ni lanzar excepción.
         Jugador.pagar_ronda(listJugador);
@@ -550,7 +549,6 @@ public class Jugar  {
     }
 
     public void finalizarRonda(){//se finaliza una ronda una vez que se cumplan las condiciones       
-        // 0 vivos = fin de ronda sin ganador (decisión mínima, revisar con el dueño)
         cerrarRondaLogica(listJugador);
         terrain.borrarHitboxAnterior();//eliminamos las hitbox anteriores
         jugando=false;//ya no se esta jugando
